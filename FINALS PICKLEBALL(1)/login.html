@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Finals 2026 Pickleball</title>
+<link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div id="loginPage" class="login-page">
+    <div class="login-card">
+        <div class="logo">🏓</div>
+        <h1>Finals 2026 Pickleball</h1>
+        <p class="subtitle">Sign in to continue</p>
+
+        <div id="loginMsg" class="login-msg hidden"></div>
+
+        <form id="loginForm" onsubmit="doLogin(event)">
+            <input type="text" id="loginUser" placeholder="Username" autocomplete="username">
+
+            <div class="pw-row">
+                <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
+                <button type="button" class="pw-toggle" onclick="togglePw()">Show</button>
+            </div>
+
+            <button type="submit" class="login-submit">Sign In</button>
+        </form>
+    </div>
+</div>
+
+<script src="login.js"></script>
+</body>
+</html>

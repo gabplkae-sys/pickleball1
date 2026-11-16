@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | PicklePro</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* SETTINGS PAGE ONLY */
+
+        .settings-section {
+            margin-bottom: 24px;
+        }
+
+        .settings-section .content-card {
+            padding: 24px;
+        }
+
+        .settings-section-heading {
+            margin-bottom: 20px;
+        }
+
+        .settings-section-heading h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .settings-section-heading p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .settings-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .settings-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .settings-form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .settings-form-group input,
+        .settings-form-group textarea,
+        .settings-form-group select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            background: #fff;
+            color: #1e293b;
+        }
+
+        .settings-form-group input:focus,
+        .settings-form-group textarea:focus,
+        .settings-form-group select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+        }
+
+        .settings-form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 17px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-info h4 {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .settings-info p {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .settings-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .settings-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .settings-slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 30px;
+            transition: .3s;
+        }
+
+        .settings-slider::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+        .settings-switch input:checked + .settings-slider {
+            background: #3b82f6;
+        }
+
+        .settings-switch input:checked + .settings-slider::before {
+            transform: translateX(20px);
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .settings-actions button {
+            cursor: pointer;
+        }
+
+        .settings-danger {
+            border: 1px solid #fecaca;
+        }
+
+        .settings-danger .settings-section-heading h3 {
+            color: #dc2626;
+        }
+
+        .settings-danger .settings-row {
+            align-items: center;
+        }
+
+        .settings-danger-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .settings-danger-btn:hover {
+            background: #dc2626;
+        }
+
+        .settings-toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #2563eb;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+
+        .settings-toast.show {
+            display: block;
+        }
+
+        /* DARK MODE */
+
+        body.dark-mode .settings-section-heading h3,
+        body.dark-mode .settings-info h4 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .settings-section-heading p,
+        body.dark-mode .settings-info p {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .settings-row {
+            border-color: #334155;
+        }
+
+        body.dark-mode .settings-form-group label {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .settings-form-group input,
+        body.dark-mode .settings-form-group textarea,
+        body.dark-mode .settings-form-group select {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .settings-danger {
+            border-color: #7f1d1d;
+        }
+
+        @media (max-width: 700px) {
+            .settings-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-form-group.full {
+                grid-column: auto;
+            }
+
+            .settings-row {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🏓</div>
+            <div>
+                <h2>PicklePro</h2>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <nav>
+            <p class="nav-label">MAIN MENU</p>
+            <a href="index.html">▦ Dashboard</a>
+            <a href="members.html">♙ Members</a>
+            <a href="inventory.html">▣ Inventory</a>
+            <a href="attendance.html">☑ Attendance</a>
+            <a href="announcements.html">▤ Announcements</a>
+            <a href="reports.html">▥ Reports</a>
+
+            <p class="nav-label">PREFERENCES</p>
+            <a href="settings.html" class="active">⚙ Settings</a>
+            <a href="profile.html">♙ My Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Finals 2026</p>
+            <small>Pickleball Management System</small>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h2>Settings</h2>
+                <p>Manage your system preferences and club information.</p>
+            </div>
+
+            <div class="admin-info">
+                <button class="theme-btn" id="themeToggle" type="button">🌙</button>
+
+                <div class="admin-avatar">A</div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Admin</small>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <!-- PAGE HEADING -->
+            <div class="page-heading">
+                <div>
+                    <h1>System Settings</h1>
+                    <p>Configure your PicklePro Management System.</p>
+                </div>
+            </div>
+
+            <!-- CLUB INFORMATION -->
+            <section class="settings-section">
+                <div class="content-card">
+
+                    <div class="settings-section-heading">
+                        <h3>🏓 Club Information</h3>
+                        <p>Manage your pickleball club's basic information.</p>
+                    </div>
+
+                    <form id="clubForm">
+                        <div class="settings-form-grid">
+
+                            <div class="settings-form-group">
+                                <label for="clubName">Club Name</label>
+                                <input type="text" id="clubName" placeholder="Enter club name">
+                            </div>
+
+                            <div class="settings-form-group">
+                                <label for="clubEmail">Club Email</label>
+                                <input type="email" id="clubEmail" placeholder="Enter email address">
+                            </div>
+
+                            <div class="settings-form-group">
+                                <label for="clubPhone">Contact Number</label>
+                                <input type="text" id="clubPhone" placeholder="Enter contact number">
+                            </div>
+
+                            <div class="settings-form-group">
+                                <label for="clubLocation">Club Location</label>
+                                <input type="text" id="clubLocation" placeholder="Enter club location">
+                            </div>
+
+                            <div class="settings-form-group full">
+                                <label for="clubDescription">Description</label>
+                                <textarea id="clubDescription" placeholder="Enter club description"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="settings-actions">
+                            <button type="submit" class="primary-btn">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </section>
+
+            <!-- SYSTEM PREFERENCES -->
+            <section class="settings-section">
+                <div class="content-card">
+
+                    <div class="settings-section-heading">
+                        <h3>⚙ System Preferences</h3>
+                        <p>Customize the appearance and behavior of the system.</p>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Dark Mode</h4>
+                            <p>Change the system appearance to dark mode.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Sound Notifications</h4>
+                            <p>Enable or disable notification sounds.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="soundToggle">
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Automatic Data Backup</h4>
+                            <p>Save your preference for automatic backups.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="backupToggle">
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="primary-btn" id="savePreferences" type="button">
+                            Save Preferences
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- NOTIFICATION SETTINGS -->
+            <section class="settings-section">
+                <div class="content-card">
+
+                    <div class="settings-section-heading">
+                        <h3>🔔 Notification Settings</h3>
+                        <p>Choose which system notifications you want to enable.</p>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>New Member Notifications</h4>
+                            <p>Receive updates when a new member is added.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="memberNotification" checked>
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Attendance Notifications</h4>
+                            <p>Receive updates about attendance records.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="attendanceNotification" checked>
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Inventory Notifications</h4>
+                            <p>Receive updates about inventory records.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="inventoryNotification" checked>
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Announcement Notifications</h4>
+                            <p>Receive updates when announcements are posted.</p>
+                        </div>
+
+                        <label class="settings-switch">
+                            <input type="checkbox" id="announcementNotification" checked>
+                            <span class="settings-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="primary-btn" id="saveNotifications" type="button">
+                            Save Notification Settings
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- BACKUP AND RESTORE -->
+            <section class="settings-section">
+                <div class="content-card">
+
+                    <div class="settings-section-heading">
+                        <h3>💾 Data Backup and Restore</h3>
+                        <p>Export your system records or restore them from a backup file.</p>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="primary-btn" id="exportData" type="button">
+                            Export System Data
+                        </button>
+
+                        <button class="secondary-btn" id="importButton" type="button">
+                            Import Backup File
+                        </button>
+
+                        <input type="file" id="importFile" accept=".json" hidden>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- DANGER ZONE -->
+            <section class="settings-section settings-danger">
+                <div class="content-card">
+
+                    <div class="settings-section-heading">
+                        <h3>⚠ Danger Zone</h3>
+                        <p>Be careful. These actions may affect your saved system data.</p>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Reset Settings</h4>
+                            <p>Restore system preferences to their default values.</p>
+                        </div>
+
+                        <button class="secondary-btn" id="resetSettings" type="button">
+                            Reset Settings
+                        </button>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <h4>Clear All System Data</h4>
+                            <p>Delete saved members, attendance, inventory, and announcements from this browser.</p>
+                        </div>
+
+                        <button class="settings-danger-btn" id="clearData" type="button">
+                            Clear All Data
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </section>
+
+        <footer class="footer">
+            © 2026 PicklePro. Pickleball Management System.
+        </footer>
+
+    </main>
+</div>
+
+<div class="settings-toast" id="toast"></div>
+
+<script>
+    const SETTINGS_KEY = "pickleSettings";
+    const NOTIFICATIONS_KEY = "pickleNotificationSettings";
+    const CLUB_KEY = "pickleClubInfo";
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2500);
+    }
+
+    function readStorage(key, fallback = {}) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || fallback;
+        } catch {
+            return fallback;
+        }
+    }
+
+    // CLUB INFORMATION
+    function loadClubInfo() {
+        const club = readStorage(CLUB_KEY);
+
+        document.getElementById("clubName").value = club.name || "";
+        document.getElementById("clubEmail").value = club.email || "";
+        document.getElementById("clubPhone").value = club.phone || "";
+        document.getElementById("clubLocation").value = club.location || "";
+        document.getElementById("clubDescription").value = club.description || "";
+    }
+
+    document.getElementById("clubForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const club = {
+            name: document.getElementById("clubName").value.trim(),
+            email: document.getElementById("clubEmail").value.trim(),
+            phone: document.getElementById("clubPhone").value.trim(),
+            location: document.getElementById("clubLocation").value.trim(),
+            description: document.getElementById("clubDescription").value.trim()
+        };
+
+        localStorage.setItem(CLUB_KEY, JSON.stringify(club));
+        showToast("Club information saved!");
+    });
+
+    // SYSTEM PREFERENCES
+    function loadPreferences() {
+        const settings = readStorage(SETTINGS_KEY);
+
+        document.getElementById("darkModeToggle").checked = !!settings.darkMode;
+        document.getElementById("soundToggle").checked = !!settings.sound;
+        document.getElementById("backupToggle").checked = !!settings.autoBackup;
+    }
+
+    document.getElementById("savePreferences").addEventListener("click", function() {
+        const settings = {
+            darkMode: document.getElementById("darkModeToggle").checked,
+            sound: document.getElementById("soundToggle").checked,
+            autoBackup: document.getElementById("backupToggle").checked
+        };
+
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        showToast("Preferences saved!");
+    });
+
+    // NOTIFICATION SETTINGS
+    function loadNotifications() {
+        const notifications = readStorage(NOTIFICATIONS_KEY, {
+            members: true,
+            attendance: true,
+            inventory: true,
+            announcements: true
+        });
+
+        document.getElementById("memberNotification").checked = notifications.members !== false;
+        document.getElementById("attendanceNotification").checked = notifications.attendance !== false;
+        document.getElementById("inventoryNotification").checked = notifications.inventory !== false;
+        document.getElementById("announcementNotification").checked = notifications.announcements !== false;
+    }
+
+    document.getElementById("saveNotifications").addEventListener("click", function() {
+        const notifications = {
+            members: document.getElementById("memberNotification").checked,
+            attendance: document.getElementById("attendanceNotification").checked,
+            inventory: document.getElementById("inventoryNotification").checked,
+            announcements: document.getElementById("announcementNotification").checked
+        };
+
+        localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+        showToast("Notification settings saved!");
+    });
+
+    // DARK MODE
+    function applyTheme(enabled) {
+        document.body.classList.toggle("dark-mode", enabled);
+        document.getElementById("darkModeToggle").checked = enabled;
+
+        const themeButton = document.getElementById("themeToggle");
+        themeButton.textContent = enabled ? "☀️" : "🌙";
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem("pickleTheme");
+        const settings = readStorage(SETTINGS_KEY);
+
+        const isDark = savedTheme
+            ? savedTheme === "dark"
+            : !!settings.darkMode;
+
+        applyTheme(isDark);
+    }
+
+    document.getElementById("themeToggle").addEventListener("click", function() {
+        const isDark = !document.body.classList.contains("dark-mode");
+
+        applyTheme(isDark);
+        localStorage.setItem("pickleTheme", isDark ? "dark" : "light");
+
+        const settings = readStorage(SETTINGS_KEY);
+        settings.darkMode = isDark;
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    });
+
+    document.getElementById("darkModeToggle").addEventListener("change", function() {
+        applyTheme(this.checked);
+        localStorage.setItem("pickleTheme", this.checked ? "dark" : "light");
+
+        const settings = readStorage(SETTINGS_KEY);
+        settings.darkMode = this.checked;
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    });
+
+    // EXPORT BACKUP
+    document.getElementById("exportData").addEventListener("click", function() {
+        const keys = [
+            "pickleMembers",
+            "members",
+            "pickleAttendance",
+            "attendance",
+            "pickleInventory",
+            "inventory",
+            "pickleEquipment",
+            "pickleAnnouncements",
+            SETTINGS_KEY,
+            NOTIFICATIONS_KEY,
+            CLUB_KEY,
+            "pickleTheme"
+        ];
+
+        const backup = {
+            backupName: "PicklePro Backup",
+            backupDate: new Date().toISOString(),
+            data: {}
+        };
+
+        keys.forEach(key => {
+            const value = localStorage.getItem(key);
+
+            if (value !== null) {
+                backup.data[key] = value;
+            }
+        });
+
+        const blob = new Blob(
+            [JSON.stringify(backup, null, 2)],
+            { type: "application/json" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "picklepro-backup.json";
+        link.click();
+
+        URL.revokeObjectURL(url);
+
+        showToast("Backup exported successfully!");
+    });
+
+    // IMPORT BACKUP
+    document.getElementById("importButton").addEventListener("click", function() {
+        document.getElementById("importFile").click();
+    });
+
+    document.getElementById("importFile").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            try {
+                const backup = JSON.parse(event.target.result);
+
+                if (!backup.data || typeof backup.data !== "object") {
+                    throw new Error("Invalid backup");
+                }
+
+                if (!confirm("Import this backup? Matching saved data will be replaced.")) {
+                    e.target.value = "";
+                    return;
+                }
+
+                Object.entries(backup.data).forEach(([key, value]) => {
+                    localStorage.setItem(key, value);
+                });
+
+                alert("Backup imported successfully!");
+                location.reload();
+
+            } catch {
+                alert("Invalid backup file. Please select a valid PicklePro JSON backup.");
+            }
+
+            e.target.value = "";
+        };
+
+        reader.readAsText(file);
+    });
+
+    // RESET SETTINGS
+    document.getElementById("resetSettings").addEventListener("click", function() {
+        if (!confirm("Are you sure you want to reset your settings?")) return;
+
+        localStorage.removeItem(SETTINGS_KEY);
+        localStorage.removeItem(NOTIFICATIONS_KEY);
+        localStorage.setItem("pickleTheme", "light");
+
+        loadPreferences();
+        loadNotifications();
+        loadTheme();
+
+        showToast("Settings have been reset!");
+    });
+
+    // CLEAR SYSTEM DATA
+    document.getElementById("clearData").addEventListener("click", function() {
+        const confirmed = confirm(
+            "WARNING: This will permanently delete saved members, attendance, inventory, and announcements from this browser. Continue?"
+        );
+
+        if (!confirmed) return;
+
+        const keys = [
+            "pickleMembers",
+            "members",
+            "pickleAttendance",
+            "attendance",
+            "pickleInventory",
+            "inventory",
+            "pickleEquipment",
+            "pickleAnnouncements"
+        ];
+
+        keys.forEach(key => localStorage.removeItem(key));
+
+        showToast("System data cleared!");
+
+        setTimeout(() => location.reload(), 1200);
+    });
+
+    // INITIALIZE
+    loadClubInfo();
+    loadPreferences();
+    loadNotifications();
+    loadTheme();
+
+</script>
+
+</body>
+</html>

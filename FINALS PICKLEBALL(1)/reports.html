@@ -1,0 +1,1203 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports | PicklePro Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ===== REPORTS PAGE CSS ===== */
+
+        .report-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .report-actions input,
+        .report-actions select {
+            padding: 11px 13px;
+            border: 1px solid #dbe2ea;
+            border-radius: 9px;
+            background: #fff;
+            color: #1e293b;
+            font: inherit;
+        }
+
+        .report-btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 16px;
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .report-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .report-section {
+            margin-top: 25px;
+        }
+
+        .report-section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .report-section-heading h3 {
+            margin: 0;
+        }
+
+        .report-section-heading p {
+            margin: 5px 0 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .report-stat {
+            background: #fff;
+            border: 1px solid #e8edf3;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+        }
+
+        .report-stat .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-stat .stat-label {
+            color: #64748b;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .report-stat .stat-number {
+            font-size: 27px;
+            margin: 12px 0 4px;
+            color: #172554;
+        }
+
+        .report-stat .stat-note {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .report-stat .stat-icon {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            background: #eff6ff;
+            border-radius: 11px;
+            font-size: 20px;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .report-card {
+            background: #fff;
+            border: 1px solid #e8edf3;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+            min-width: 0;
+        }
+
+        .report-card h3 {
+            margin: 0 0 5px;
+            color: #172554;
+            font-size: 16px;
+        }
+
+        .report-card > p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 0 0 18px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 270px;
+            width: 100%;
+        }
+
+        .report-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 13px 14px;
+            text-align: left;
+            border-bottom: 1px solid #edf1f5;
+            font-size: 13px;
+        }
+
+        .report-table th {
+            color: #64748b;
+            font-size: 11px;
+            letter-spacing: .04em;
+            background: #f8fafc;
+        }
+
+        .report-table td {
+            color: #334155;
+        }
+
+        .report-empty {
+            padding: 22px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .report-notice {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: #1e40af;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* DARK MODE */
+
+        body.dark-mode .report-stat,
+        body.dark-mode .report-card {
+            background: #1e293b;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .report-stat .stat-number,
+        body.dark-mode .report-card h3 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .report-section-heading p,
+        body.dark-mode .report-card > p,
+        body.dark-mode .report-stat .stat-label,
+        body.dark-mode .report-stat .stat-note {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .report-actions input,
+        body.dark-mode .report-actions select {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .report-table th {
+            background: #0f172a;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .report-table td {
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        body.dark-mode .report-notice {
+            background: #172554;
+            color: #bfdbfe;
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media (max-width: 1000px) {
+            .report-stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .report-actions {
+                width: 100%;
+            }
+
+            .report-actions input {
+                flex: 1;
+                min-width: 130px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .report-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🏓</div>
+            <div>
+                <h2>PicklePro</h2>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <nav>
+            <p class="nav-label">MAIN MENU</p>
+
+            <a href="index.html">▦ Dashboard</a>
+            <a href="members.html">♙ Members</a>
+            <a href="inventory.html">▣ Inventory</a>
+            <a href="attendance.html">☑ Attendance</a>
+            <a href="announcements.html">▤ Announcements</a>
+            <a href="reports.html" class="active">▥ Reports</a>
+
+            <p class="nav-label">PREFERENCES</p>
+
+            <a href="settings.html">⚙ Settings</a>
+            <a href="profile.html">♙ My Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Finals 2026</p>
+            <small>Pickleball Management System</small>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+                <h2>Reports</h2>
+                <p>View attendance, membership, and inventory summaries.</p>
+            </div>
+
+            <div class="admin-info">
+                <button class="theme-btn" id="themeToggle" type="button">🌙</button>
+
+                <div class="admin-avatar">A</div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Admin</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="page-content">
+
+            <!-- PAGE HEADING -->
+            <div class="page-heading">
+
+                <div>
+                    <h1>Reports Overview</h1>
+                    <p>Monitor club activities and review system records.</p>
+                </div>
+
+                <div class="report-actions">
+                    <input type="date" id="startDate" aria-label="Start date">
+                    <input type="date" id="endDate" aria-label="End date">
+
+                    <button class="report-btn" id="applyFilter" type="button">
+                        Apply Filter
+                    </button>
+
+                    <button class="report-btn" id="exportReport" type="button">
+                        Export CSV
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- ATTENDANCE STATISTICS -->
+            <section class="report-section">
+
+                <div class="report-section-heading">
+                    <div>
+                        <h3>Attendance Summary</h3>
+                        <p>Attendance records within the selected date range.</p>
+                    </div>
+                </div>
+
+                <div class="report-stats">
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Total Records</p>
+                            <div class="stat-icon">📋</div>
+                        </div>
+                        <h2 class="stat-number" id="totalAttendance">0</h2>
+                        <span class="stat-note">Recorded attendance entries</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Present</p>
+                            <div class="stat-icon">✅</div>
+                        </div>
+                        <h2 class="stat-number" id="presentCount">0</h2>
+                        <span class="stat-note">Members marked present</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Absent</p>
+                            <div class="stat-icon">❌</div>
+                        </div>
+                        <h2 class="stat-number" id="absentCount">0</h2>
+                        <span class="stat-note">Members marked absent</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Attendance Rate</p>
+                            <div class="stat-icon">📈</div>
+                        </div>
+                        <h2 class="stat-number" id="attendanceRate">0%</h2>
+                        <span class="stat-note">Present out of all records</span>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- MEMBER AND INVENTORY STATISTICS -->
+            <section class="report-section">
+
+                <div class="report-section-heading">
+                    <div>
+                        <h3>Membership and Inventory</h3>
+                        <p>Current summaries based on saved system records.</p>
+                    </div>
+                </div>
+
+                <div class="report-stats">
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Total Members</p>
+                            <div class="stat-icon">👥</div>
+                        </div>
+                        <h2 class="stat-number" id="totalMembers">0</h2>
+                        <span class="stat-note">Registered club members</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Active Members</p>
+                            <div class="stat-icon">🟢</div>
+                        </div>
+                        <h2 class="stat-number" id="activeMembers">0</h2>
+                        <span class="stat-note">Members with active status</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Total Equipment</p>
+                            <div class="stat-icon">🏓</div>
+                        </div>
+                        <h2 class="stat-number" id="totalEquipment">0</h2>
+                        <span class="stat-note">Inventory records</span>
+                    </div>
+
+                    <div class="report-stat">
+                        <div class="stat-top">
+                            <p class="stat-label">Available Equipment</p>
+                            <div class="stat-icon">📦</div>
+                        </div>
+                        <h2 class="stat-number" id="availableEquipment">0</h2>
+                        <span class="stat-note">Equipment ready for use</span>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- CHARTS -->
+            <section class="report-section">
+
+                <div class="report-section-heading">
+                    <div>
+                        <h3>Reports and Analytics</h3>
+                        <p>Visual summaries of club records.</p>
+                    </div>
+                </div>
+
+                <div class="report-grid">
+
+                    <div class="report-card">
+                        <h3>Attendance Overview</h3>
+                        <p>Present and absent attendance records.</p>
+                        <div class="chart-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>Membership Overview</h3>
+                        <p>Distribution of active and inactive members.</p>
+                        <div class="chart-container">
+                            <canvas id="memberChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>Inventory Overview</h3>
+                        <p>Equipment grouped by availability status.</p>
+                        <div class="chart-container">
+                            <canvas id="inventoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>Attendance by Date</h3>
+                        <p>Number of present and absent records per day.</p>
+                        <div class="chart-container">
+                            <canvas id="dailyAttendanceChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ATTENDANCE TABLE -->
+            <section class="report-section">
+
+                <div class="report-section-heading">
+                    <div>
+                        <h3>Attendance Report Details</h3>
+                        <p>Recent attendance records matching the selected date range.</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+
+                    <div class="report-table-wrap">
+                        <table class="report-table">
+
+                            <thead>
+                                <tr>
+                                    <th>MEMBER</th>
+                                    <th>DATE</th>
+                                    <th>TIME</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="attendanceTable"></tbody>
+
+                        </table>
+                    </div>
+
+                    <div class="report-empty" id="noAttendance" style="display:none;">
+                        No attendance records found for this date range.
+                    </div>
+
+                </div>
+            </section>
+
+            <div class="report-notice">
+                Reports use records saved by the Members, Attendance, and Inventory pages
+                in this browser. If a page uses a different localStorage key or field names,
+                update the key and field mapping in this file.
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            © 2026 PicklePro. Pickleball Management System.
+        </footer>
+
+    </main>
+</div>
+
+<script>
+
+    // ===== LOCAL STORAGE DATA =====
+
+    function readStorage(key, fallbackKeys = []) {
+        const keys = [key, ...fallbackKeys];
+
+        for (const storageKey of keys) {
+            try {
+                const saved = localStorage.getItem(storageKey);
+
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+
+                    if (Array.isArray(parsed)) return parsed;
+                    if (parsed && Array.isArray(parsed.data)) return parsed.data;
+                    if (parsed && Array.isArray(parsed.records)) return parsed.records;
+                }
+
+            } catch (error) {
+                console.warn("Unable to read localStorage key:", storageKey, error);
+            }
+        }
+
+        return [];
+    }
+
+    let members = readStorage("pickleMembers", ["members"]);
+    let attendance = readStorage("pickleAttendance", ["attendance"]);
+    let inventory = readStorage("pickleInventory", ["inventory", "pickleEquipment"]);
+
+    // SAMPLE ATTENDANCE RECORDS
+
+    if (attendance.length === 0) {
+
+        const sampleDate = new Date().toLocaleDateString("en-CA");
+
+        attendance = [
+            {
+                memberName: "Alex Santos",
+                date: sampleDate,
+                time: "08:00 AM",
+                status: "Present"
+            },
+            {
+                memberName: "Jamie Cruz",
+                date: sampleDate,
+                time: "08:10 AM",
+                status: "Present"
+            },
+            {
+                memberName: "Taylor Reyes",
+                date: sampleDate,
+                time: "08:15 AM",
+                status: "Absent"
+            },
+            {
+                memberName: "Jordan Garcia",
+                date: sampleDate,
+                time: "08:20 AM",
+                status: "Present"
+            }
+        ];
+    }
+
+    let attendanceChart = null;
+    let memberChart = null;
+    let inventoryChart = null;
+    let dailyAttendanceChart = null;
+    let filteredAttendance = [];
+
+    // ===== FIELD HELPERS =====
+
+    function firstValue(item, keys, fallback = "") {
+
+        for (const key of keys) {
+
+            if (
+                item &&
+                item[key] !== undefined &&
+                item[key] !== null &&
+                item[key] !== ""
+            ) {
+                return item[key];
+            }
+        }
+
+        return fallback;
+    }
+
+    function normalizeStatus(value) {
+        return String(value || "").trim().toLowerCase();
+    }
+
+    function getAttendanceStatus(item) {
+
+        return normalizeStatus(
+            firstValue(item, [
+                "status",
+                "attendanceStatus",
+                "attendance",
+                "state"
+            ])
+        );
+    }
+
+    function isPresent(item) {
+
+        const status = getAttendanceStatus(item);
+
+        return [
+            "present",
+            "attended",
+            "checked in",
+            "checked-in"
+        ].includes(status);
+    }
+
+    function isAbsent(item) {
+
+        const status = getAttendanceStatus(item);
+
+        return [
+            "absent",
+            "not present",
+            "missed"
+        ].includes(status);
+    }
+
+    function getMemberStatus(item) {
+
+        return normalizeStatus(
+            firstValue(item, [
+                "status",
+                "membershipStatus",
+                "memberStatus"
+            ], "active")
+        );
+    }
+
+    function isActiveMember(item) {
+
+        const status = getMemberStatus(item);
+
+        return [
+            "active",
+            "approved",
+            "current"
+        ].includes(status);
+    }
+
+    function getInventoryStatus(item) {
+
+        return normalizeStatus(
+            firstValue(item, [
+                "status",
+                "condition",
+                "availability",
+                "itemStatus"
+            ], "available")
+        );
+    }
+
+    function isAvailable(item) {
+
+        const status = getInventoryStatus(item);
+
+        return [
+            "available",
+            "good",
+            "in stock",
+            "in-stock",
+            "ready"
+        ].includes(status);
+    }
+
+    function getDate(item) {
+
+        return String(
+            firstValue(item, [
+                "date",
+                "attendanceDate",
+                "createdAt",
+                "recordDate"
+            ], "")
+        ).slice(0, 10);
+    }
+
+    function getMemberName(item) {
+
+        return firstValue(item, [
+            "memberName",
+            "name",
+            "fullName",
+            "member",
+            "playerName"
+        ], "Unknown Member");
+    }
+
+    function getTime(item) {
+
+        return firstValue(item, [
+            "time",
+            "attendanceTime",
+            "checkInTime",
+            "createdAt"
+        ], "—");
+    }
+
+    function escapeHTML(value) {
+
+        return String(value).replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]);
+    }
+
+    // ===== DATE FILTER =====
+
+    function getDateFilteredAttendance() {
+
+        const start = document.getElementById("startDate").value;
+        const end = document.getElementById("endDate").value;
+
+        return attendance.filter(item => {
+
+            const date = getDate(item);
+
+            if (!date) return false;
+            if (start && date < start) return false;
+            if (end && date > end) return false;
+
+            return true;
+        });
+    }
+
+    // ===== UPDATE SUMMARY CARDS =====
+
+    function updateSummary() {
+
+        filteredAttendance = getDateFilteredAttendance();
+
+        const total = filteredAttendance.length;
+        const present = filteredAttendance.filter(isPresent).length;
+        const absent = filteredAttendance.filter(isAbsent).length;
+
+        const rate = total
+            ? Math.round((present / total) * 100)
+            : 0;
+
+        document.getElementById("totalAttendance").textContent = total;
+        document.getElementById("presentCount").textContent = present;
+        document.getElementById("absentCount").textContent = absent;
+        document.getElementById("attendanceRate").textContent = rate + "%";
+
+        const active = members.filter(isActiveMember).length;
+
+        document.getElementById("totalMembers").textContent = members.length;
+        document.getElementById("activeMembers").textContent = active;
+
+        document.getElementById("totalEquipment").textContent = inventory.length;
+
+        document.getElementById("availableEquipment").textContent =
+            inventory.filter(isAvailable).length;
+    }
+
+    // ===== CHART HELPERS =====
+
+    function destroyChart(chart) {
+
+        if (chart) {
+            chart.destroy();
+        }
+    }
+
+    function updateCharts() {
+
+        const present = filteredAttendance.filter(isPresent).length;
+        const absent = filteredAttendance.filter(isAbsent).length;
+
+        const active = members.filter(isActiveMember).length;
+        const inactive = Math.max(members.length - active, 0);
+
+        const available = inventory.filter(isAvailable).length;
+
+        const borrowed = inventory.filter(item => {
+
+            const status = getInventoryStatus(item);
+
+            return [
+                "borrowed",
+                "in use",
+                "in-use",
+                "checked out"
+            ].includes(status);
+
+        }).length;
+
+        const damaged = inventory.filter(item => {
+
+            const status = getInventoryStatus(item);
+
+            return [
+                "damaged",
+                "broken",
+                "for repair",
+                "under maintenance"
+            ].includes(status);
+
+        }).length;
+
+        const other = Math.max(
+            inventory.length - available - borrowed - damaged,
+            0
+        );
+
+        destroyChart(attendanceChart);
+        destroyChart(memberChart);
+        destroyChart(inventoryChart);
+        destroyChart(dailyAttendanceChart);
+
+        // ATTENDANCE CHART
+
+        attendanceChart = new Chart(
+            document.getElementById("attendanceChart"),
+            {
+                type: "doughnut",
+
+                data: {
+                    labels: ["Present", "Absent"],
+
+                    datasets: [{
+                        data: [present, absent],
+                        backgroundColor: ["#16a34a", "#ef4444"],
+                        borderWidth: 0
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            }
+        );
+
+        // MEMBERSHIP CHART
+
+        memberChart = new Chart(
+            document.getElementById("memberChart"),
+            {
+                type: "pie",
+
+                data: {
+                    labels: ["Active", "Inactive"],
+
+                    datasets: [{
+                        data: [active, inactive],
+                        backgroundColor: ["#2563eb", "#f59e0b"],
+                        borderWidth: 0
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            }
+        );
+
+        // INVENTORY CHART
+
+        inventoryChart = new Chart(
+            document.getElementById("inventoryChart"),
+            {
+                type: "bar",
+
+                data: {
+                    labels: [
+                        "Available",
+                        "Borrowed",
+                        "Damaged",
+                        "Other"
+                    ],
+
+                    datasets: [{
+                        label: "Equipment",
+                        data: [
+                            available,
+                            borrowed,
+                            damaged,
+                            other
+                        ],
+                        backgroundColor: [
+                            "#16a34a",
+                            "#2563eb",
+                            "#ef4444",
+                            "#94a3b8"
+                        ],
+                        borderRadius: 7
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        // DAILY ATTENDANCE CHART
+
+        const daily = {};
+
+        filteredAttendance.forEach(item => {
+
+            const date = getDate(item);
+
+            if (!date) return;
+
+            if (!daily[date]) {
+                daily[date] = {
+                    present: 0,
+                    absent: 0
+                };
+            }
+
+            if (isPresent(item)) {
+                daily[date].present++;
+            }
+
+            if (isAbsent(item)) {
+                daily[date].absent++;
+            }
+        });
+
+        const dates = Object.keys(daily).sort();
+
+        dailyAttendanceChart = new Chart(
+            document.getElementById("dailyAttendanceChart"),
+            {
+                type: "bar",
+
+                data: {
+                    labels: dates.length ? dates : ["No records"],
+
+                    datasets: [
+                        {
+                            label: "Present",
+                            data: dates.map(date => daily[date].present),
+                            backgroundColor: "#16a34a",
+                            borderRadius: 5
+                        },
+                        {
+                            label: "Absent",
+                            data: dates.map(date => daily[date].absent),
+                            backgroundColor: "#ef4444",
+                            borderRadius: 5
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    }
+
+    // ===== ATTENDANCE TABLE =====
+
+    function renderAttendanceTable() {
+
+        const table = document.getElementById("attendanceTable");
+        const empty = document.getElementById("noAttendance");
+
+        const sorted = [...filteredAttendance].sort(
+            (a, b) => getDate(b).localeCompare(getDate(a))
+        );
+
+        table.innerHTML = "";
+
+        if (sorted.length === 0) {
+
+            empty.style.display = "block";
+            return;
+        }
+
+        empty.style.display = "none";
+
+        sorted.slice(0, 50).forEach(item => {
+
+            const status = getAttendanceStatus(item);
+
+            const label = isPresent(item)
+                ? "Present"
+                : isAbsent(item)
+                    ? "Absent"
+                    : (status || "Unspecified");
+
+            table.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(getMemberName(item))}</td>
+                    <td>${escapeHTML(getDate(item) || "—")}</td>
+                    <td>${escapeHTML(getTime(item))}</td>
+                    <td>${escapeHTML(label)}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // ===== REFRESH REPORTS =====
+
+    function refreshReports() {
+
+        updateSummary();
+        updateCharts();
+        renderAttendanceTable();
+    }
+
+    document.getElementById("applyFilter")
+        .addEventListener("click", refreshReports);
+
+    // ===== EXPORT CSV =====
+
+    document.getElementById("exportReport")
+        .addEventListener("click", function() {
+
+            const rows = [
+                ["Member", "Date", "Time", "Status"],
+
+                ...filteredAttendance.map(item => [
+                    getMemberName(item),
+                    getDate(item),
+                    getTime(item),
+
+                    firstValue(item, [
+                        "status",
+                        "attendanceStatus",
+                        "attendance",
+                        "state"
+                    ], "Unspecified")
+                ])
+            ];
+
+            const csv = rows.map(row =>
+
+                row.map(value =>
+                    `"${String(value).replace(/"/g, '""')}"`
+                ).join(",")
+
+            ).join("\n");
+
+            const blob = new Blob(
+                [csv],
+                { type: "text/csv;charset=utf-8;" }
+            );
+
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "picklepro-attendance-report.csv";
+
+            document.body.appendChild(link);
+
+            link.click();
+            link.remove();
+
+            URL.revokeObjectURL(url);
+        });
+
+    // ===== DARK MODE =====
+
+    document.getElementById("themeToggle")
+        .addEventListener("click", function() {
+
+            document.body.classList.toggle("dark-mode");
+
+            this.textContent =
+                document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙";
+        });
+
+    // ===== INITIAL DISPLAY =====
+
+    const today = new Date().toLocaleDateString("en-CA");
+
+    document.getElementById("startDate").value = "";
+    document.getElementById("endDate").value = today;
+
+    refreshReports();
+
+</script>
+
+</body>
+</html>

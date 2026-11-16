@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Finals 2026 Pickleball</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>🏓 PICKLEBALL</h2>
+            <p>Management System</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="index.html" class="active">▦ Dashboard</a>
+            <a href="members.html">👥 Members</a>
+            <a href="inventory.html">📦 Inventory</a>
+            <a href="attendance.html">📋 Attendance</a>
+            <a href="reservations.html">🏟️ Reservations</a>
+            <a href="announcements.html">📢 Announcements</a>
+            <a href="reports.html">📊 Reports</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="settings.html">⚙ Settings</a>
+            <a href="profile.html">👤 Profile</a>
+            <a href="login.html" class="logout-link">↪ Logout</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back, Admin! Here's your overview.</p>
+            </div>
+
+            <div class="admin-info">
+                <span>Administrator</span>
+                <div class="admin-avatar">A</div>
+            </div>
+        </header>
+
+        <!-- STATISTICS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon blue">👥</div>
+                <div>
+                    <p>Total Members</p>
+                    <h2 class="count-up" data-target="1248">0</h2>
+                    <small>Registered members</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">🏓</div>
+                <div>
+                    <p>Players Inside Now</p>
+                    <h2 class="count-up" data-target="37">0</h2>
+                    <small>Currently checked in</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon orange">📦</div>
+                <div>
+                    <p>Inventory Items</p>
+                    <h2 class="count-up" data-target="312">0</h2>
+                    <small>Total equipment</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon red">⏰</div>
+                <div>
+                    <p>Expiring Memberships</p>
+                    <h2 class="count-up" data-target="14">0</h2>
+                    <small>Needs attention</small>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- DASHBOARD CONTENT -->
+        <section class="dashboard-grid">
+
+            <!-- ATTENDANCE CHART -->
+            <div class="dashboard-card attendance-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Weekly Attendance</h3>
+                        <p>Player attendance overview</p>
+                    </div>
+                    <span class="card-tag">This Week</span>
+                </div>
+
+                <div class="attendance-chart">
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:65%"></div>
+                        <span>Mon</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:85%"></div>
+                        <span>Tue</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:55%"></div>
+                        <span>Wed</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:95%"></div>
+                        <span>Thu</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:75%"></div>
+                        <span>Fri</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:100%"></div>
+                        <span>Sat</span>
+                    </div>
+
+                    <div class="chart-column">
+                        <div class="chart-bar" style="height:45%"></div>
+                        <span>Sun</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="dashboard-card quick-actions">
+                <div class="card-header">
+                    <div>
+                        <h3>Quick Actions</h3>
+                        <p>Frequently used functions</p>
+                    </div>
+                </div>
+
+                <a href="members.html" class="action-button">
+                    <span>👥</span> Manage Members
+                </a>
+
+                <a href="inventory.html" class="action-button">
+                    <span>📦</span> Manage Inventory
+                </a>
+
+                <a href="attendance.html" class="action-button">
+                    <span>📋</span> View Attendance
+                </a>
+
+                <!-- NEW RESERVATION QUICK ACTION -->
+                <a href="reservations.html" class="action-button">
+                    <span>🏟️</span> Manage Court Reservations
+                </a>
+
+                <a href="announcements.html" class="action-button">
+                    <span>📢</span> Create Announcement
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- BOTTOM CONTENT -->
+        <section class="dashboard-grid bottom-grid">
+
+            <!-- RECENT ACTIVITIES -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Recent Activities</h3>
+                        <p>Latest system activities</p>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">👤</div>
+                    <div>
+                        <strong>New Member Registered</strong>
+                        <p>A new member joined the system.</p>
+                        <small>Recently</small>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">🏓</div>
+                    <div>
+                        <strong>Player Checked In</strong>
+                        <p>A player recorded their attendance.</p>
+                        <small>Recently</small>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">📦</div>
+                    <div>
+                        <strong>Inventory Updated</strong>
+                        <p>Equipment information was updated.</p>
+                        <small>Recently</small>
+                    </div>
+                </div>
+
+                <!-- NEW RESERVATION ACTIVITY -->
+                <div class="activity-item">
+                    <div class="activity-icon">🏟️</div>
+                    <div>
+                        <strong>Court Reservation Management</strong>
+                        <p>View and manage pickleball court bookings.</p>
+                        <small>
+                            <a href="reservations.html">Open Reservations</a>
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MANAGEMENT SUMMARY -->
+            <div class="dashboard-card summary-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Management Summary</h3>
+                        <p>System overview</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <span>Membership Status</span>
+                    <strong>Active</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Attendance Monitoring</span>
+                    <strong>Enabled</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Inventory Monitoring</span>
+                    <strong>Enabled</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Court Reservations</span>
+                    <strong>Enabled</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>System Status</span>
+                    <strong class="status-online">● Online</strong>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="dashboard-footer">
+            <p>© 2026 Finals Pickleball Management System. All rights reserved.</p>
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>

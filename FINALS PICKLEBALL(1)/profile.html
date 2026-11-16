@@ -1,0 +1,614 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | PicklePro</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* PROFILE PAGE STYLES */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 320px minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .profile-card,
+        .profile-form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.04);
+        }
+
+        .profile-card {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: #2563eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 38px;
+            font-weight: 700;
+            margin: 0 auto 15px;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card h2 {
+            font-size: 20px;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .profile-role {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .profile-divider {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 22px 0;
+        }
+
+        .profile-detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .profile-detail span:first-child {
+            color: #64748b;
+        }
+
+        .profile-detail span:last-child {
+            color: #1e293b;
+            font-weight: 600;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-section-title {
+            margin-bottom: 20px;
+        }
+
+        .profile-section-title h3 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .profile-section-title p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .profile-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .profile-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .profile-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .profile-form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .profile-form-group input,
+        .profile-form-group textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            background: #fff;
+            color: #1e293b;
+        }
+
+        .profile-form-group input:focus,
+        .profile-form-group textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.10);
+        }
+
+        .profile-form-group textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .profile-upload {
+            display: inline-block;
+            margin-top: 12px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .profile-upload input {
+            display: none;
+        }
+
+        .profile-note {
+            margin-top: 18px;
+            padding: 13px 15px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .profile-toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #2563eb;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+
+        .profile-toast.show {
+            display: block;
+        }
+
+        /* DARK MODE */
+
+        body.dark-mode .profile-card,
+        body.dark-mode .profile-form-card {
+            background: #1e293b;
+        }
+
+        body.dark-mode .profile-card h2,
+        body.dark-mode .profile-section-title h3,
+        body.dark-mode .profile-detail span:last-child {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .profile-role,
+        body.dark-mode .profile-section-title p,
+        body.dark-mode .profile-detail span:first-child {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .profile-divider {
+            border-color: #334155;
+        }
+
+        body.dark-mode .profile-form-group label {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .profile-form-group input,
+        body.dark-mode .profile-form-group textarea {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .profile-note {
+            background: #172554;
+            color: #bfdbfe;
+        }
+
+        @media (max-width: 900px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .profile-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-form-group.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🏓</div>
+            <div>
+                <h2>PicklePro</h2>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <nav>
+            <p class="nav-label">MAIN MENU</p>
+            <a href="index.html">▦ Dashboard</a>
+            <a href="members.html">♙ Members</a>
+            <a href="inventory.html">▣ Inventory</a>
+            <a href="attendance.html">☑ Attendance</a>
+            <a href="announcements.html">▤ Announcements</a>
+            <a href="reports.html">▥ Reports</a>
+
+            <p class="nav-label">PREFERENCES</p>
+            <a href="settings.html">⚙ Settings</a>
+            <a href="profile.html" class="active">♙ My Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Finals 2026</p>
+            <small>Pickleball Management System</small>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h2>My Profile</h2>
+                <p>View and manage your administrator account.</p>
+            </div>
+
+            <div class="admin-info">
+                <button class="theme-btn" id="themeToggle" type="button">🌙</button>
+                <div class="admin-avatar">A</div>
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Admin</small>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <!-- PAGE HEADING -->
+            <div class="page-heading">
+                <div>
+                    <h1>Account Profile</h1>
+                    <p>Manage your personal information and account details.</p>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+
+                <!-- PROFILE SUMMARY -->
+                <section class="profile-card">
+
+                    <div class="profile-avatar" id="profileAvatar">
+                        A
+                    </div>
+
+                    <label class="profile-upload">
+                        Change Profile Picture
+                        <input type="file" id="avatarInput" accept="image/*">
+                    </label>
+
+                    <h2 id="displayName">Administrator</h2>
+                    <p class="profile-role" id="displayRole">System Administrator</p>
+
+                    <span class="profile-badge">Active Account</span>
+
+                    <hr class="profile-divider">
+
+                    <div class="profile-detail">
+                        <span>Username</span>
+                        <span id="displayUsername">admin</span>
+                    </div>
+
+                    <div class="profile-detail">
+                        <span>Email</span>
+                        <span id="displayEmail">admin@picklepro.com</span>
+                    </div>
+
+                    <div class="profile-detail">
+                        <span>Phone</span>
+                        <span id="displayPhone">Not provided</span>
+                    </div>
+
+                    <div class="profile-detail">
+                        <span>Account Type</span>
+                        <span>Administrator</span>
+                    </div>
+
+                </section>
+
+                <!-- EDIT PROFILE -->
+                <section class="profile-form-card">
+
+                    <div class="profile-section-title">
+                        <h3>Personal Information</h3>
+                        <p>Update the information associated with your account.</p>
+                    </div>
+
+                    <form id="profileForm">
+
+                        <div class="profile-form-grid">
+
+                            <div class="profile-form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" required>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" required>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" required>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" required>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="phone">Contact Number</label>
+                                <input type="text" id="phone">
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label for="role">Position</label>
+                                <input type="text" id="role" value="System Administrator">
+                            </div>
+
+                            <div class="profile-form-group full">
+                                <label for="bio">About Me</label>
+                                <textarea id="bio" placeholder="Write a short description about yourself..."></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="profile-actions">
+                            <button type="submit" class="primary-btn">
+                                Save Profile
+                            </button>
+
+                            <button type="reset" class="secondary-btn" id="resetForm">
+                                Reset Form
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <div class="profile-note">
+                        Your profile information is saved in this browser using localStorage.
+                        This is a front-end demonstration and does not update a server account.
+                    </div>
+
+                </section>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            © 2026 PicklePro. Pickleball Management System.
+        </footer>
+
+    </main>
+</div>
+
+<div class="profile-toast" id="toast"></div>
+
+<script>
+    const PROFILE_KEY = "pickleAdminProfile";
+
+    const defaultProfile = {
+        firstName: "Administrator",
+        lastName: "",
+        username: "admin",
+        email: "admin@picklepro.com",
+        phone: "",
+        role: "System Administrator",
+        bio: "",
+        avatar: ""
+    };
+
+    function getProfile() {
+        try {
+            return {
+                ...defaultProfile,
+                ...(JSON.parse(localStorage.getItem(PROFILE_KEY)) || {})
+            };
+        } catch {
+            return { ...defaultProfile };
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2500);
+    }
+
+    function getFullName(profile) {
+        return `${profile.firstName} ${profile.lastName}`.trim();
+    }
+
+    function updateProfileDisplay(profile) {
+        const fullName = getFullName(profile) || "Administrator";
+
+        document.getElementById("displayName").textContent = fullName;
+        document.getElementById("displayRole").textContent = profile.role || "System Administrator";
+        document.getElementById("displayUsername").textContent = profile.username || "Not provided";
+        document.getElementById("displayEmail").textContent = profile.email || "Not provided";
+        document.getElementById("displayPhone").textContent = profile.phone || "Not provided";
+
+        const avatar = document.getElementById("profileAvatar");
+
+        if (profile.avatar) {
+            avatar.innerHTML = "";
+            const image = document.createElement("img");
+            image.src = profile.avatar;
+            image.alt = "Profile picture";
+            avatar.appendChild(image);
+        } else {
+            avatar.textContent = (profile.firstName || "A").charAt(0).toUpperCase();
+        }
+    }
+
+    function loadProfile() {
+        const profile = getProfile();
+
+        document.getElementById("firstName").value = profile.firstName;
+        document.getElementById("lastName").value = profile.lastName;
+        document.getElementById("username").value = profile.username;
+        document.getElementById("email").value = profile.email;
+        document.getElementById("phone").value = profile.phone;
+        document.getElementById("role").value = profile.role;
+        document.getElementById("bio").value = profile.bio;
+
+        updateProfileDisplay(profile);
+    }
+
+    // SAVE PROFILE
+    document.getElementById("profileForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const currentProfile = getProfile();
+
+        const updatedProfile = {
+            ...currentProfile,
+            firstName: document.getElementById("firstName").value.trim(),
+            lastName: document.getElementById("lastName").value.trim(),
+            username: document.getElementById("username").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            role: document.getElementById("role").value.trim(),
+            bio: document.getElementById("bio").value.trim()
+        };
+
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(updatedProfile));
+
+        updateProfileDisplay(updatedProfile);
+        showToast("Profile updated successfully!");
+    });
+
+    // RESET FORM
+    document.getElementById("resetForm").addEventListener("click", function() {
+        setTimeout(loadProfile, 0);
+    });
+
+    // PROFILE PICTURE UPLOAD
+    document.getElementById("avatarInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image file.");
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert("Please choose an image smaller than 2 MB.");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const profile = getProfile();
+            profile.avatar = event.target.result;
+
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+            updateProfileDisplay(profile);
+            showToast("Profile picture updated!");
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    // DARK MODE
+    function loadTheme() {
+        const isDark = localStorage.getItem("pickleTheme") === "dark";
+
+        document.body.classList.toggle("dark-mode", isDark);
+        document.getElementById("themeToggle").textContent = isDark ? "☀️" : "🌙";
+    }
+
+    document.getElementById("themeToggle").addEventListener("click", function() {
+        const isDark = !document.body.classList.contains("dark-mode");
+
+        document.body.classList.toggle("dark-mode", isDark);
+
+        this.textContent = isDark ? "☀️" : "🌙";
+
+        localStorage.setItem("pickleTheme", isDark ? "dark" : "light");
+    });
+
+    // INITIALIZE
+    loadProfile();
+    loadTheme();
+</script>
+
+</body>
+</html>

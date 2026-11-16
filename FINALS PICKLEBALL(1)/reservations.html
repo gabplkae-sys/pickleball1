@@ -1,0 +1,898 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Court Reservations | PicklePro</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* RESERVATIONS PAGE */
+.reservation-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.5fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.reservation-card, .availability-card, .reservation-list-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    color: var(--text-color, #1f2937);
+}
+
+.reservation-card h3, .availability-card h3,
+.reservation-list-card h3 {
+    margin: 0 0 18px;
+    font-size: 17px;
+}
+
+.form-group { margin-bottom: 15px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-group input, .form-group select, .form-group textarea,
+.filter-control {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 8px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #1f2937);
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group textarea { resize: vertical; min-height: 75px; }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.reservation-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.reservation-actions button {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.save-btn { background: #2563eb; color: white; }
+.reset-btn { background: #e5e7eb; color: #374151; }
+
+.availability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.availability-header input {
+    max-width: 180px;
+    padding: 9px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 8px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #1f2937);
+}
+
+.court-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.court-tab {
+    padding: 9px 14px;
+    border: 1px solid var(--border-color, #ddd);
+    background: transparent;
+    color: var(--text-color, #333);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.court-tab.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.slot {
+    padding: 12px 8px;
+    border-radius: 9px;
+    text-align: center;
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.slot.booked {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.slot.selected {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #60a5fa;
+}
+
+.slot small {
+    display: block;
+    margin-top: 4px;
+    font-weight: 400;
+}
+
+.availability-legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--muted-text, #6b7280);
+}
+
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.available-dot { background: #86efac; }
+.booked-dot { background: #fca5a5; }
+
+.reservation-list-card { margin-top: 22px; }
+
+.list-toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.list-toolbar input { flex: 1; min-width: 180px; }
+.list-toolbar select { width: 160px; }
+
+.reservation-table-wrap { overflow-x: auto; }
+
+.reservation-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.reservation-table th, .reservation-table td {
+    padding: 13px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    font-size: 13px;
+}
+
+.reservation-table th {
+    color: var(--muted-text, #6b7280);
+    font-weight: 600;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-confirmed { background: #dcfce7; color: #166534; }
+.status-cancelled { background: #fee2e2; color: #991b1b; }
+
+.action-buttons { display: flex; gap: 6px; }
+
+.action-btn {
+    padding: 6px 9px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.edit-btn { background: #dbeafe; color: #1d4ed8; }
+.cancel-btn { background: #fef3c7; color: #92400e; }
+.delete-btn { background: #fee2e2; color: #991b1b; }
+
+.empty-state {
+    text-align: center;
+    padding: 30px 15px;
+    color: var(--muted-text, #6b7280);
+}
+
+.reservation-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.reservation-stat {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    padding: 17px;
+}
+
+.reservation-stat span {
+    display: block;
+    font-size: 12px;
+    color: var(--muted-text, #6b7280);
+    margin-bottom: 7px;
+}
+
+.reservation-stat strong { font-size: 23px; }
+
+.form-message {
+    display: none;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+.form-message.error { display: block; background: #fee2e2; color: #991b1b; }
+.form-message.success { display: block; background: #dcfce7; color: #166534; }
+
+@media(max-width: 950px) {
+    .reservation-layout { grid-template-columns: 1fr; }
+}
+
+@media(max-width: 600px) {
+    .reservation-stats { grid-template-columns: 1fr; }
+    .slot-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🏓</div>
+            <div>
+                <h2>PicklePro</h2>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <nav>
+            <p class="nav-label">MAIN MENU</p>
+            <a href="index.html">📊 Dashboard</a>
+            <a href="members.html">👥 Members</a>
+            <a href="inventory.html">📦 Inventory</a>
+            <a href="attendance.html">📋 Attendance</a>
+            <a href="reservations.html" class="active">🏟️ Reservations</a>
+            <a href="announcements.html">📢 Announcements</a>
+            <a href="reports.html">📈 Reports</a>
+
+            <p class="nav-label">PREFERENCES</p>
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="profile.html">👤 My Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <span>PicklePro Management</span>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h2>Reservations</h2>
+                <p>Manage pickleball court bookings and schedules</p>
+            </div>
+
+            <div class="admin-info">
+                <button class="theme-btn" id="themeToggle" type="button">🌙</button>
+                <div class="admin-avatar">A</div>
+                <span>Administrator</span>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <h1>Court Reservations</h1>
+                    <p>Manage court schedules and member bookings.</p>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="reservation-stats">
+                <div class="reservation-stat">
+                    <span>Total Reservations</span>
+                    <strong id="totalReservations">0</strong>
+                </div>
+                <div class="reservation-stat">
+                    <span>Confirmed Bookings</span>
+                    <strong id="confirmedReservations">0</strong>
+                </div>
+                <div class="reservation-stat">
+                    <span>Today's Bookings</span>
+                    <strong id="todayReservations">0</strong>
+                </div>
+            </div>
+
+            <div class="reservation-layout">
+
+                <!-- BOOKING FORM -->
+                <section class="reservation-card">
+                    <h3 id="formTitle">Create Reservation</h3>
+
+                    <div id="formMessage" class="form-message"></div>
+
+                    <form id="reservationForm">
+
+                        <input type="hidden" id="reservationId">
+
+                        <div class="form-group">
+                            <label for="memberName">Member Name *</label>
+                            <input type="text" id="memberName"
+                                   placeholder="Enter member's full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="court">Select Court *</label>
+                            <select id="court" required>
+                                <option value="">Choose a court</option>
+                                <option value="Court 1">Court 1</option>
+                                <option value="Court 2">Court 2</option>
+                                <option value="Court 3">Court 3</option>
+                                <option value="Court 4">Court 4</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingDate">Reservation Date *</label>
+                            <input type="date" id="bookingDate" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startTime">Start Time *</label>
+                                <select id="startTime" required>
+                                    <option value="">Start time</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="endTime">End Time *</label>
+                                <select id="endTime" required>
+                                    <option value="">End time</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Additional Notes</label>
+                            <textarea id="notes"
+                                      placeholder="Optional notes..."></textarea>
+                        </div>
+
+                        <div class="reservation-actions">
+                            <button type="submit" class="save-btn" id="saveButton">
+                                Save Reservation
+                            </button>
+                            <button type="button" class="reset-btn" id="resetButton">
+                                Clear
+                            </button>
+                        </div>
+
+                    </form>
+                </section>
+
+                <!-- COURT AVAILABILITY -->
+                <section class="availability-card">
+
+                    <div class="availability-header">
+                        <h3>Court Availability</h3>
+                        <input type="date" id="availabilityDate">
+                    </div>
+
+                    <div class="court-tabs" id="courtTabs">
+                        <button class="court-tab active" data-court="Court 1">Court 1</button>
+                        <button class="court-tab" data-court="Court 2">Court 2</button>
+                        <button class="court-tab" data-court="Court 3">Court 3</button>
+                        <button class="court-tab" data-court="Court 4">Court 4</button>
+                    </div>
+
+                    <div id="availabilitySlots" class="slot-grid"></div>
+
+                    <div class="availability-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot available-dot"></span>
+                            Available
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot booked-dot"></span>
+                            Booked
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+
+            <!-- RESERVATION LIST -->
+            <section class="reservation-list-card">
+
+                <h3>Reservation Records</h3>
+
+                <div class="list-toolbar">
+                    <input type="text" id="searchReservations"
+                           class="filter-control"
+                           placeholder="Search member or court...">
+
+                    <select id="statusFilter" class="filter-control">
+                        <option value="all">All Status</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="reservation-table-wrap">
+                    <table class="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Court</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    <h3>No reservations found</h3>
+                    <p>Create a reservation to get started.</p>
+                </div>
+
+            </section>
+
+            <footer class="footer">
+                © 2026 PicklePro Management System. All rights reserved.
+            </footer>
+
+        </section>
+    </main>
+</div>
+
+<script>
+const STORAGE_KEY = "pickleReservations";
+const THEME_KEY = "pickleTheme";
+
+const courts = ["Court 1", "Court 2", "Court 3", "Court 4"];
+
+// Operating hours: 7:00 AM to 9:00 PM
+const startTimes = [];
+for (let hour = 7; hour < 21; hour++) {
+    startTimes.push(hour);
+}
+
+let reservations = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+let selectedAvailabilityCourt = "Court 1";
+
+const form = document.getElementById("reservationForm");
+const memberName = document.getElementById("memberName");
+const courtInput = document.getElementById("court");
+const bookingDate = document.getElementById("bookingDate");
+const startTime = document.getElementById("startTime");
+const endTime = document.getElementById("endTime");
+const notes = document.getElementById("notes");
+const reservationId = document.getElementById("reservationId");
+const formMessage = document.getElementById("formMessage");
+
+function localDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+const today = localDateString();
+
+bookingDate.min = today;
+document.getElementById("availabilityDate").min = today;
+bookingDate.value = today;
+document.getElementById("availabilityDate").value = today;
+
+function saveReservations() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+}
+
+function formatTime(hour) {
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:00 ${suffix}`;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+function populateTimeOptions() {
+    startTime.innerHTML = '<option value="">Start time</option>';
+    endTime.innerHTML = '<option value="">End time</option>';
+
+    startTimes.forEach(hour => {
+        const option = document.createElement("option");
+        option.value = hour;
+        option.textContent = formatTime(hour);
+        startTime.appendChild(option);
+    });
+
+    for (let hour = 8; hour <= 21; hour++) {
+        const option = document.createElement("option");
+        option.value = hour;
+        option.textContent = formatTime(hour);
+        endTime.appendChild(option);
+    }
+}
+
+populateTimeOptions();
+
+function showMessage(message, type) {
+    formMessage.textContent = message;
+    formMessage.className = "form-message " + type;
+
+    setTimeout(() => {
+        formMessage.className = "form-message";
+    }, 4000);
+}
+
+function isOverlapping(newBooking, ignoredId = null) {
+    return reservations.some(existing => {
+        if (existing.id === ignoredId) return false;
+        if (existing.status !== "Confirmed") return false;
+
+        if (
+            existing.court !== newBooking.court ||
+            existing.date !== newBooking.date
+        ) {
+            return false;
+        }
+
+        return (
+            Number(newBooking.startTime) < Number(existing.endTime) &&
+            Number(newBooking.endTime) > Number(existing.startTime)
+        );
+    });
+}
+
+function resetForm() {
+    form.reset();
+    reservationId.value = "";
+    bookingDate.value = today;
+    document.getElementById("formTitle").textContent = "Create Reservation";
+    document.getElementById("saveButton").textContent = "Save Reservation";
+    formMessage.className = "form-message";
+}
+
+document.getElementById("resetButton").addEventListener("click", resetForm);
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const member = memberName.value.trim();
+    const court = courtInput.value;
+    const date = bookingDate.value;
+    const start = Number(startTime.value);
+    const end = Number(endTime.value);
+    const editId = reservationId.value;
+
+    if (!member || !court || !date || !startTime.value || !endTime.value) {
+        showMessage("Please complete all required fields.", "error");
+        return;
+    }
+
+    if (date < today) {
+        showMessage("You cannot create a reservation for a past date.", "error");
+        return;
+    }
+
+    if (end <= start) {
+        showMessage("End time must be later than start time.", "error");
+        return;
+    }
+
+    const booking = {
+        id: editId || String(Date.now()),
+        member,
+        court,
+        date,
+        startTime: start,
+        endTime: end,
+        notes: notes.value.trim(),
+        status: "Confirmed"
+    };
+
+    if (isOverlapping(booking, editId || null)) {
+        showMessage("This court is already booked during that time.", "error");
+        return;
+    }
+
+    if (editId) {
+        const index = reservations.findIndex(item => item.id === editId);
+
+        if (index !== -1) {
+            reservations[index] = booking;
+        }
+
+        showMessage("Reservation updated successfully.", "success");
+    } else {
+        reservations.push(booking);
+        showMessage("Reservation created successfully.", "success");
+    }
+
+    saveReservations();
+    renderAll();
+    resetForm();
+});
+
+function renderStats() {
+    const confirmed = reservations.filter(item => item.status === "Confirmed");
+
+    document.getElementById("totalReservations").textContent =
+        reservations.length;
+
+    document.getElementById("confirmedReservations").textContent =
+        confirmed.length;
+
+    document.getElementById("todayReservations").textContent =
+        confirmed.filter(item => item.date === today).length;
+}
+
+function renderReservations() {
+    const tbody = document.getElementById("reservationTableBody");
+    const search = document.getElementById("searchReservations")
+        .value.toLowerCase().trim();
+
+    const status = document.getElementById("statusFilter").value;
+
+    const filtered = reservations
+        .filter(item => {
+            const matchesSearch =
+                item.member.toLowerCase().includes(search) ||
+                item.court.toLowerCase().includes(search);
+
+            const matchesStatus =
+                status === "all" || item.status === status;
+
+            return matchesSearch && matchesStatus;
+        })
+        .sort((a, b) =>
+            a.date.localeCompare(b.date) ||
+            Number(a.startTime) - Number(b.startTime)
+        );
+
+    tbody.innerHTML = "";
+
+    document.getElementById("emptyState").style.display =
+        filtered.length ? "none" : "block";
+
+    filtered.forEach(item => {
+        const row = document.createElement("tr");
+
+        const statusClass = item.status === "Confirmed"
+            ? "status-confirmed"
+            : "status-cancelled";
+
+        row.innerHTML = `
+            <td>${escapeHTML(item.member)}</td>
+            <td>${escapeHTML(item.court)}</td>
+            <td>${formatDate(item.date)}</td>
+            <td>${formatTime(Number(item.startTime))} - ${formatTime(Number(item.endTime))}</td>
+            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+            <td>
+                <div class="action-buttons">
+                    ${item.status === "Confirmed" ? `
+                        <button class="action-btn edit-btn" data-action="edit" data-id="${item.id}">Edit</button>
+                        <button class="action-btn cancel-btn" data-action="cancel" data-id="${item.id}">Cancel</button>
+                    ` : ""}
+                    <button class="action-btn delete-btn" data-action="delete" data-id="${item.id}">Delete</button>
+                </div>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+document.getElementById("reservationTableBody").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+
+    const id = button.dataset.id;
+    const action = button.dataset.action;
+    const booking = reservations.find(item => item.id === id);
+
+    if (!booking) return;
+
+    if (action === "edit") {
+        memberName.value = booking.member;
+        courtInput.value = booking.court;
+        bookingDate.value = booking.date;
+        startTime.value = booking.startTime;
+        endTime.value = booking.endTime;
+        notes.value = booking.notes || "";
+        reservationId.value = booking.id;
+
+        document.getElementById("formTitle").textContent = "Edit Reservation";
+        document.getElementById("saveButton").textContent = "Update Reservation";
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    if (action === "cancel") {
+        if (confirm("Are you sure you want to cancel this reservation?")) {
+            booking.status = "Cancelled";
+            saveReservations();
+            renderAll();
+        }
+    }
+
+    if (action === "delete") {
+        if (confirm("Permanently delete this reservation?")) {
+            reservations = reservations.filter(item => item.id !== id);
+            saveReservations();
+            renderAll();
+        }
+    }
+});
+
+function renderAvailability() {
+    const date = document.getElementById("availabilityDate").value;
+    const container = document.getElementById("availabilitySlots");
+
+    container.innerHTML = "";
+
+    startTimes.forEach(hour => {
+        const nextHour = hour + 1;
+
+        const isBooked = reservations.some(item =>
+            item.status === "Confirmed" &&
+            item.court === selectedAvailabilityCourt &&
+            item.date === date &&
+            Number(item.startTime) < nextHour &&
+            Number(item.endTime) > hour
+        );
+
+        const slot = document.createElement("div");
+        slot.className = "slot" + (isBooked ? " booked" : "");
+
+        slot.innerHTML = `
+            ${formatTime(hour)}
+            <small>${isBooked ? "Booked" : "Available"}</small>
+        `;
+
+        container.appendChild(slot);
+    });
+}
+
+document.getElementById("courtTabs").addEventListener("click", function(event) {
+    const button = event.target.closest(".court-tab");
+    if (!button) return;
+
+    selectedAvailabilityCourt = button.dataset.court;
+
+    document.querySelectorAll(".court-tab").forEach(tab => {
+        tab.classList.toggle("active", tab === button);
+    });
+
+    renderAvailability();
+});
+
+document.getElementById("availabilityDate").addEventListener("change", renderAvailability);
+
+document.getElementById("searchReservations").addEventListener("input", renderReservations);
+document.getElementById("statusFilter").addEventListener("change", renderReservations);
+
+bookingDate.addEventListener("change", function() {
+    document.getElementById("availabilityDate").value = bookingDate.value;
+    renderAvailability();
+});
+
+// Clicking a time slot fills the booking form.
+document.getElementById("availabilitySlots").addEventListener("click", function(event) {
+    const slot = event.target.closest(".slot");
+    if (!slot || slot.classList.contains("booked")) return;
+
+    const index = Array.from(this.children).indexOf(slot);
+    const hour = startTimes[index];
+
+    courtInput.value = selectedAvailabilityCourt;
+    bookingDate.value = document.getElementById("availabilityDate").value;
+    startTime.value = hour;
+    endTime.value = hour + 1;
+
+    memberName.focus();
+});
+
+// DARK MODE
+function applyTheme() {
+    const theme = localStorage.getItem(THEME_KEY) || "light";
+    document.body.classList.toggle("dark-mode", theme === "dark");
+
+    const button = document.getElementById("themeToggle");
+    if (button) {
+        button.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+}
+
+document.getElementById("themeToggle").addEventListener("click", function() {
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem(THEME_KEY, isDark ? "light" : "dark");
+    applyTheme();
+});
+
+function renderAll() {
+    renderStats();
+    renderReservations();
+    renderAvailability();
+}
+
+applyTheme();
+renderAll();
+</script>
+
+</body>
+</html>

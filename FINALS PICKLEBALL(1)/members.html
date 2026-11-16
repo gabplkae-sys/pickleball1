@@ -1,0 +1,1048 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members Management | Pickleball Management System</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .members-page { animation: pageEnter .4s ease; }
+
+        .members-toolbar {
+            display:flex; justify-content:space-between;
+            align-items:center; flex-wrap:wrap;
+            gap:15px; margin-bottom:22px;
+        }
+
+        .members-toolbar h2 { font-size:20px; margin-bottom:5px; }
+        .members-toolbar p { color:var(--muted); font-size:13px; }
+
+        .toolbar-actions {
+            display:flex; align-items:center;
+            gap:10px; flex-wrap:wrap;
+        }
+
+        .search-box { position:relative; min-width:240px; }
+        .search-box input {
+            padding:12px 14px 12px 40px;
+            margin:0; background:var(--surface);
+        }
+
+        .search-icon {
+            position:absolute; left:14px; top:50%;
+            transform:translateY(-50%);
+            color:var(--muted); pointer-events:none;
+        }
+
+        .filter-select {
+            width:auto; min-width:145px;
+            margin:0; background:var(--surface);
+        }
+
+        .add-member-btn {
+            display:inline-flex; align-items:center;
+            justify-content:center; gap:8px;
+            background:var(--primary); color:white;
+            padding:12px 17px; border:none;
+            border-radius:9px; font-weight:600;
+            transition:.25s ease;
+        }
+
+        .add-member-btn:hover {
+            background:var(--primary-dark);
+            transform:translateY(-2px);
+            box-shadow:0 5px 15px #3158d833;
+        }
+
+        .members-stats {
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:17px; margin-bottom:25px;
+        }
+
+        .member-stat {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:20px; box-shadow:var(--shadow);
+            display:flex; align-items:center; gap:14px;
+            transition:.25s ease;
+        }
+
+        .member-stat:hover {
+            transform:translateY(-5px);
+            box-shadow:0 12px 25px #152b5018;
+        }
+
+        .member-stat-icon {
+            width:48px; height:48px; min-width:48px;
+            display:grid; place-items:center;
+            border-radius:12px; font-size:22px;
+        }
+
+        .icon-blue { background:#dbeafe; }
+        .icon-green { background:#dcfce7; }
+        .icon-orange { background:#ffedd5; }
+        .icon-purple { background:#ede9fe; }
+
+        .member-stat p {
+            color:var(--muted); font-size:12px;
+            margin-bottom:6px;
+        }
+
+        .member-stat h2 { font-size:25px; color:var(--text); }
+
+        .members-table-card {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:22px; box-shadow:var(--shadow);
+            min-width:0;
+        }
+
+        .members-table-header {
+            display:flex; justify-content:space-between;
+            align-items:center; flex-wrap:wrap;
+            gap:12px; margin-bottom:15px;
+        }
+
+        .members-table-header h3 { font-size:17px; }
+
+        .members-table-header p {
+            font-size:12px; color:var(--muted);
+            margin-top:5px;
+        }
+
+        .table-wrap { overflow-x:auto; }
+        .members-table { min-width:850px; }
+        .members-table th { white-space:nowrap; }
+        .members-table td { vertical-align:middle; }
+
+        .member-info {
+            display:flex; align-items:center;
+            gap:11px; min-width:175px;
+        }
+
+        .member-avatar {
+            width:39px; height:39px; min-width:39px;
+            display:grid; place-items:center;
+            background:var(--soft); color:var(--primary);
+            border-radius:50%; font-weight:bold;
+            font-size:13px;
+        }
+
+        .member-info strong {
+            display:block; font-size:13px;
+            color:var(--text);
+        }
+
+        .member-info small {
+            display:block; color:var(--muted);
+            font-size:11px; margin-top:4px;
+        }
+
+        .member-id {
+            font-weight:600; color:var(--primary);
+            font-size:12px;
+        }
+
+        .action-buttons {
+            display:flex; gap:6px; white-space:nowrap;
+        }
+
+        .table-action {
+            width:32px; height:32px; border:none;
+            border-radius:7px; background:var(--soft);
+            color:var(--primary); transition:.2s ease;
+            cursor:pointer;
+        }
+
+        .table-action:hover {
+            transform:translateY(-2px);
+            filter:brightness(.94);
+        }
+
+        .table-action.delete {
+            background:var(--danger-bg); color:var(--danger);
+        }
+
+        .table-action.view {
+            background:var(--success-bg); color:var(--success);
+        }
+
+        .empty-state {
+            text-align:center; padding:45px 15px;
+            color:var(--muted);
+        }
+
+        .empty-state .empty-icon {
+            font-size:38px; margin-bottom:12px;
+        }
+
+        .empty-state h3 {
+            color:var(--text); margin-bottom:7px;
+        }
+
+        .empty-state p { font-size:13px; }
+
+        /* MODALS */
+        .member-modal {
+            position:fixed; inset:0; z-index:100;
+            background:#0009; display:grid;
+            place-items:center; padding:18px;
+            backdrop-filter:blur(4px); overflow-y:auto;
+        }
+
+        .member-modal-box {
+            width:100%; max-width:570px;
+            max-height:90vh; overflow-y:auto;
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:16px; padding:25px;
+            box-shadow:0 20px 60px #0003;
+            animation:modalEnter .25s ease;
+        }
+
+        @keyframes modalEnter {
+            from { opacity:0; transform:translateY(20px) scale(.98); }
+            to { opacity:1; transform:translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            display:flex; justify-content:space-between;
+            align-items:center; gap:12px; margin-bottom:22px;
+        }
+
+        .modal-header h2 { font-size:20px; }
+        .modal-header p { font-size:12px; color:var(--muted); margin-top:5px; }
+
+        .close-modal {
+            width:34px; height:34px; border:none;
+            border-radius:8px; background:var(--soft);
+            color:var(--text); font-size:19px; cursor:pointer;
+        }
+
+        .close-modal:hover {
+            background:var(--danger-bg); color:var(--danger);
+        }
+
+        .form-grid {
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:12px 16px;
+        }
+
+        .form-group { min-width:0; }
+        .form-group.full { grid-column:1/-1; }
+
+        .form-group label {
+            display:block; color:var(--text);
+            font-size:12px; font-weight:600;
+            margin-bottom:5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            margin:0; width:100%;
+        }
+
+        .form-group textarea { min-height:75px; }
+
+        .form-actions {
+            display:flex; justify-content:flex-end;
+            gap:10px; margin-top:23px;
+            padding-top:17px; border-top:1px solid var(--border);
+        }
+
+        .cancel-btn {
+            padding:11px 17px; background:var(--soft);
+            color:var(--text); border:none;
+            border-radius:8px; cursor:pointer;
+        }
+
+        .save-btn {
+            padding:11px 19px; background:var(--primary);
+            color:white; border:none;
+            border-radius:8px; font-weight:600;
+            cursor:pointer;
+        }
+
+        .save-btn:hover { background:var(--primary-dark); }
+
+        /* DETAILS */
+        .details-profile { text-align:center; padding:10px 0 20px; }
+
+        .details-avatar {
+            width:75px; height:75px; margin:0 auto 12px;
+            display:grid; place-items:center;
+            border-radius:50%; background:var(--soft);
+            color:var(--primary); font-size:24px;
+            font-weight:bold;
+        }
+
+        .details-profile h3 { font-size:19px; }
+        .details-profile p { color:var(--muted); font-size:12px; margin-top:5px; }
+
+        .details-grid {
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:10px;
+        }
+
+        .detail-item {
+            padding:13px; background:var(--bg);
+            border:1px solid var(--border);
+            border-radius:9px; min-width:0;
+        }
+
+        .detail-item small {
+            display:block; color:var(--muted);
+            font-size:11px; margin-bottom:6px;
+        }
+
+        .detail-item strong {
+            font-size:13px; overflow-wrap:anywhere;
+        }
+
+        .member-toast {
+            position:fixed; right:25px; bottom:25px;
+            z-index:200; padding:14px 20px;
+            border-radius:10px; background:#192640;
+            color:white; box-shadow:0 5px 20px #0003;
+            font-size:13px; animation:pageEnter .3s ease;
+        }
+
+        @media(max-width:1100px) {
+            .members-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        }
+
+        @media(max-width:800px) {
+            .members-toolbar { align-items:flex-start; }
+            .toolbar-actions { width:100%; }
+            .search-box { flex:1; min-width:180px; }
+        }
+
+        @media(max-width:600px) {
+            .members-stats { grid-template-columns:1fr 1fr; gap:10px; }
+            .member-stat { padding:14px; gap:9px; }
+            .member-stat-icon { width:39px; min-width:39px; height:39px; font-size:18px; }
+            .member-stat h2 { font-size:21px; }
+            .toolbar-actions { flex-direction:column; align-items:stretch; }
+            .search-box, .filter-select, .add-member-btn { width:100%; }
+            .members-table-card { padding:15px; }
+            .form-grid, .details-grid { grid-template-columns:1fr; }
+            .member-modal-box { padding:18px; }
+        }
+
+        @media(max-width:380px) {
+            .members-stats { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>🏓 PICKLEBALL</h2>
+            <p>MANAGEMENT SYSTEM</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="index.html">📊 Dashboard</a>
+            <a href="members.html" class="active">👥 Members</a>
+            <a href="inventory.html">📦 Inventory</a>
+            <a href="attendance.html">📋 Attendance</a>
+            <a href="reservations.html">🏟️ Reservations</a>
+            <a href="announcements.html">📢 Announcements</a>
+            <a href="reports.html">📈 Reports</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="profile.html">👤 My Profile</a>
+            <a href="index.html" class="logout-link"
+               onclick="return confirm('Are you sure you want to leave this page?')">
+                🚪 Logout
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Members Management</h1>
+                <p>Manage and monitor your pickleball club members.</p>
+            </div>
+
+            <div class="admin-info">
+                <button class="theme-btn" id="themeBtn" title="Toggle dark mode">🌙</button>
+                <div class="admin-avatar">A</div>
+                <span>Administrator</span>
+            </div>
+        </header>
+
+        <section class="members-page">
+
+            <!-- PAGE INTRODUCTION -->
+            <div class="members-toolbar">
+                <div>
+                    <h2>All Members</h2>
+                    <p>View, add, update, and manage registered members.</p>
+                </div>
+
+                <div class="toolbar-actions">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="search" id="searchInput"
+                               placeholder="Search name, ID, or email...">
+                    </div>
+
+                    <select id="statusFilter" class="filter-select">
+                        <option value="All">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+
+                    <button class="add-member-btn" id="addMemberBtn">
+                        <span>＋</span> Add Member
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="members-stats">
+
+                <div class="member-stat">
+                    <div class="member-stat-icon icon-blue">👥</div>
+                    <div>
+                        <p>Total Members</p>
+                        <h2 id="totalMembers">0</h2>
+                    </div>
+                </div>
+
+                <div class="member-stat">
+                    <div class="member-stat-icon icon-green">✓</div>
+                    <div>
+                        <p>Active Members</p>
+                        <h2 id="activeMembers">0</h2>
+                    </div>
+                </div>
+
+                <div class="member-stat">
+                    <div class="member-stat-icon icon-orange">⌛</div>
+                    <div>
+                        <p>Pending Members</p>
+                        <h2 id="pendingMembers">0</h2>
+                    </div>
+                </div>
+
+                <div class="member-stat">
+                    <div class="member-stat-icon icon-purple">⏸</div>
+                    <div>
+                        <p>Inactive Members</p>
+                        <h2 id="inactiveMembers">0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MEMBERS TABLE -->
+            <div class="members-table-card">
+
+                <div class="members-table-header">
+                    <div>
+                        <h3>Member Directory</h3>
+                        <p>Complete list of registered pickleball members.</p>
+                    </div>
+
+                    <span class="card-tag" id="resultCount">0 Members</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="members-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Member ID</th>
+                                <th>Contact Number</th>
+                                <th>Membership Type</th>
+                                <th>Date Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="membersTableBody"></tbody>
+                    </table>
+
+                    <div class="empty-state hidden" id="emptyState">
+                        <div class="empty-icon">👥</div>
+                        <h3>No Members Found</h3>
+                        <p>Try changing your search or add a new member.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <footer class="dashboard-footer">
+            © 2026 Pickleball Management System. All rights reserved.
+        </footer>
+
+    </main>
+</div>
+
+<!-- ADD / EDIT MEMBER MODAL -->
+<div class="member-modal hidden" id="memberModal">
+    <div class="member-modal-box">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Add New Member</h2>
+                <p>Enter the member's information below.</p>
+            </div>
+            <button class="close-modal" id="closeModal">×</button>
+        </div>
+
+        <form id="memberForm">
+            <input type="hidden" id="editMemberId">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="memberName">Full Name *</label>
+                    <input type="text" id="memberName" placeholder="Enter full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberEmail">Email Address *</label>
+                    <input type="email" id="memberEmail" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberPhone">Contact Number *</label>
+                    <input type="tel" id="memberPhone"
+                           placeholder="09XXXXXXXXX"
+                           pattern="09[0-9]{9}"
+                           title="Enter an 11-digit Philippine mobile number starting with 09"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberGender">Gender</label>
+                    <select id="memberGender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberType">Membership Type *</label>
+                    <select id="memberType" required>
+                        <option value="">Select Membership</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Student">Student</option>
+                        <option value="VIP">VIP</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberStatus">Membership Status *</label>
+                    <select id="memberStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="joinDate">Date Joined *</label>
+                    <input type="date" id="joinDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberBirthdate">Birthdate</label>
+                    <input type="date" id="memberBirthdate">
+                </div>
+
+                <div class="form-group full">
+                    <label for="memberAddress">Address</label>
+                    <textarea id="memberAddress" placeholder="Enter complete address"></textarea>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" id="cancelModal">Cancel</button>
+                <button type="submit" class="save-btn" id="saveMemberBtn">Save Member</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- VIEW MEMBER DETAILS MODAL -->
+<div class="member-modal hidden" id="detailsModal">
+    <div class="member-modal-box">
+
+        <div class="modal-header">
+            <div>
+                <h2>Member Information</h2>
+                <p>Complete details of the selected member.</p>
+            </div>
+            <button class="close-modal" id="closeDetails">×</button>
+        </div>
+
+        <div id="memberDetailsContent"></div>
+
+        <div class="form-actions">
+            <button class="cancel-btn" id="closeDetailsBtn">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="member-toast hidden" id="memberToast"></div>
+
+<script>
+/* SAMPLE DATA */
+const defaultMembers = [
+    {
+        id:"PB-1001", name:"Juan Dela Cruz",
+        email:"juan@example.com", phone:"09171234567",
+        gender:"Male", type:"Premium", status:"Active",
+        joinDate:"2026-01-15", birthdate:"2000-05-12",
+        address:"Angeles City, Pampanga"
+    },
+    {
+        id:"PB-1002", name:"Maria Santos",
+        email:"maria@example.com", phone:"09181234567",
+        gender:"Female", type:"Regular", status:"Active",
+        joinDate:"2026-02-10", birthdate:"2001-08-20",
+        address:"San Fernando, Pampanga"
+    },
+    {
+        id:"PB-1003", name:"Mark Reyes",
+        email:"mark@example.com", phone:"09191234567",
+        gender:"Male", type:"Student", status:"Pending",
+        joinDate:"2026-03-05", birthdate:"2004-03-18",
+        address:"Mabalacat City, Pampanga"
+    },
+    {
+        id:"PB-1004", name:"Angela Garcia",
+        email:"angela@example.com", phone:"09201234567",
+        gender:"Female", type:"VIP", status:"Active",
+        joinDate:"2026-04-12", birthdate:"1999-11-25",
+        address:"Porac, Pampanga"
+    },
+    {
+        id:"PB-1005", name:"Carlos Mendoza",
+        email:"carlos@example.com", phone:"09211234567",
+        gender:"Male", type:"Regular", status:"Inactive",
+        joinDate:"2026-05-20", birthdate:"1998-07-09",
+        address:"Mexico, Pampanga"
+    }
+];
+
+/* LOAD SAVED MEMBERS */
+let members;
+
+try {
+    const savedMembers = localStorage.getItem("pickleballMembers");
+    members = savedMembers ? JSON.parse(savedMembers) : [...defaultMembers];
+
+    if (!Array.isArray(members)) members = [...defaultMembers];
+} catch (error) {
+    members = [...defaultMembers];
+}
+
+/* ELEMENTS */
+const tableBody = document.getElementById("membersTableBody");
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const memberModal = document.getElementById("memberModal");
+const detailsModal = document.getElementById("detailsModal");
+const memberForm = document.getElementById("memberForm");
+
+/* SAVE TO LOCAL STORAGE */
+function saveMembers() {
+    localStorage.setItem("pickleballMembers", JSON.stringify(members));
+}
+
+/* ESCAPE HTML */
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;",
+        '"':"&quot;", "'":"&#039;"
+    })[char]);
+}
+
+/* GENERATE MEMBER INITIALS */
+function getInitials(name) {
+    return String(name || "").trim().split(/\s+/)
+        .slice(0,2)
+        .map(word => word.charAt(0).toUpperCase())
+        .join("");
+}
+
+/* FORMAT DATE */
+function formatDate(date) {
+    if (!date) return "—";
+    const parsedDate = new Date(date + "T00:00:00");
+    if (isNaN(parsedDate)) return "—";
+
+    return parsedDate.toLocaleDateString("en-PH", {
+        year:"numeric", month:"short", day:"numeric"
+    });
+}
+
+/* STATUS BADGE */
+function getStatusBadge(status) {
+    if (status === "Active") return '<span class="badge ok">Active</span>';
+    if (status === "Pending") return '<span class="badge warn">Pending</span>';
+    return '<span class="badge bad">Inactive</span>';
+}
+
+/* UPDATE STATISTICS */
+function updateStatistics() {
+    document.getElementById("totalMembers").textContent = members.length;
+    document.getElementById("activeMembers").textContent =
+        members.filter(member => member.status === "Active").length;
+    document.getElementById("pendingMembers").textContent =
+        members.filter(member => member.status === "Pending").length;
+    document.getElementById("inactiveMembers").textContent =
+        members.filter(member => member.status === "Inactive").length;
+}
+
+/* DISPLAY MEMBERS */
+function displayMembers() {
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const selectedStatus = statusFilter.value;
+
+    const filteredMembers = members.filter(member => {
+        const matchesSearch =
+            String(member.name || "").toLowerCase().includes(searchValue) ||
+            String(member.id || "").toLowerCase().includes(searchValue) ||
+            String(member.email || "").toLowerCase().includes(searchValue);
+
+        const matchesStatus =
+            selectedStatus === "All" || member.status === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+    });
+
+    document.getElementById("resultCount").textContent =
+        `${filteredMembers.length} Member${filteredMembers.length !== 1 ? "s" : ""}`;
+
+    if (filteredMembers.length === 0) {
+        tableBody.innerHTML = "";
+        document.getElementById("emptyState").classList.remove("hidden");
+        updateStatistics();
+        return;
+    }
+
+    document.getElementById("emptyState").classList.add("hidden");
+
+    tableBody.innerHTML = filteredMembers.map(member => `
+        <tr>
+            <td>
+                <div class="member-info">
+                    <div class="member-avatar">${escapeHTML(getInitials(member.name))}</div>
+                    <div>
+                        <strong>${escapeHTML(member.name)}</strong>
+                        <small>${escapeHTML(member.email)}</small>
+                    </div>
+                </div>
+            </td>
+            <td><span class="member-id">${escapeHTML(member.id)}</span></td>
+            <td>${escapeHTML(member.phone)}</td>
+            <td>${escapeHTML(member.type)}</td>
+            <td>${formatDate(member.joinDate)}</td>
+            <td>${getStatusBadge(member.status)}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="table-action view" title="View Details"
+                            data-action="view" data-id="${escapeHTML(member.id)}">👁</button>
+                    <button class="table-action" title="Edit Member"
+                            data-action="edit" data-id="${escapeHTML(member.id)}">✏️</button>
+                    <button class="table-action delete" title="Delete Member"
+                            data-action="delete" data-id="${escapeHTML(member.id)}">🗑</button>
+                </div>
+            </td>
+        </tr>
+    `).join("");
+
+    updateStatistics();
+}
+
+/* SHOW TOAST */
+let toastTimer;
+
+function showToast(message) {
+    const toast = document.getElementById("memberToast");
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
+}
+
+/* GENERATE MEMBER ID */
+function generateMemberID() {
+    let highestNumber = 1000;
+
+    members.forEach(member => {
+        const number = parseInt(String(member.id).replace("PB-", ""), 10);
+        if (!isNaN(number) && number > highestNumber) highestNumber = number;
+    });
+
+    return "PB-" + (highestNumber + 1);
+}
+
+/* OPEN ADD MEMBER MODAL */
+document.getElementById("addMemberBtn").addEventListener("click", () => {
+    memberForm.reset();
+    document.getElementById("editMemberId").value = "";
+    document.getElementById("modalTitle").textContent = "Add New Member";
+    document.getElementById("saveMemberBtn").textContent = "Save Member";
+    document.getElementById("joinDate").value =
+        new Date().toLocaleDateString("en-CA");
+    memberModal.classList.remove("hidden");
+});
+
+/* CLOSE ADD / EDIT MODAL */
+function closeMemberModal() {
+    memberModal.classList.add("hidden");
+}
+
+document.getElementById("closeModal").addEventListener("click", closeMemberModal);
+document.getElementById("cancelModal").addEventListener("click", closeMemberModal);
+
+/* ADD OR UPDATE MEMBER */
+memberForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const editID = document.getElementById("editMemberId").value;
+
+    const memberData = {
+        id:editID || generateMemberID(),
+        name:document.getElementById("memberName").value.trim(),
+        email:document.getElementById("memberEmail").value.trim(),
+        phone:document.getElementById("memberPhone").value.trim(),
+        gender:document.getElementById("memberGender").value,
+        type:document.getElementById("memberType").value,
+        status:document.getElementById("memberStatus").value,
+        joinDate:document.getElementById("joinDate").value,
+        birthdate:document.getElementById("memberBirthdate").value,
+        address:document.getElementById("memberAddress").value.trim()
+    };
+
+    const duplicateEmail = members.some(member =>
+        String(member.email).toLowerCase() === memberData.email.toLowerCase() &&
+        member.id !== editID
+    );
+
+    if (duplicateEmail) {
+        showToast("This email address is already registered.");
+        return;
+    }
+
+    if (editID) {
+        const index = members.findIndex(member => member.id === editID);
+        if (index !== -1) {
+            members[index] = memberData;
+            showToast("Member information updated successfully!");
+        }
+    } else {
+        members.push(memberData);
+        showToast("New member added successfully!");
+    }
+
+    saveMembers();
+    displayMembers();
+    closeMemberModal();
+});
+
+/* TABLE ACTIONS */
+tableBody.addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+
+    const action = button.dataset.action;
+    const id = button.dataset.id;
+    const member = members.find(member => member.id === id);
+    if (!member) return;
+
+    if (action === "view") viewMember(id);
+    if (action === "edit") editMember(id);
+    if (action === "delete") deleteMember(id);
+});
+
+/* EDIT MEMBER */
+function editMember(id) {
+    const member = members.find(member => member.id === id);
+    if (!member) return;
+
+    document.getElementById("editMemberId").value = member.id;
+    document.getElementById("memberName").value = member.name;
+    document.getElementById("memberEmail").value = member.email;
+    document.getElementById("memberPhone").value = member.phone;
+    document.getElementById("memberGender").value = member.gender || "";
+    document.getElementById("memberType").value = member.type;
+    document.getElementById("memberStatus").value = member.status;
+    document.getElementById("joinDate").value = member.joinDate;
+    document.getElementById("memberBirthdate").value = member.birthdate || "";
+    document.getElementById("memberAddress").value = member.address || "";
+
+    document.getElementById("modalTitle").textContent = "Edit Member";
+    document.getElementById("saveMemberBtn").textContent = "Update Member";
+    memberModal.classList.remove("hidden");
+}
+
+/* VIEW MEMBER DETAILS */
+function viewMember(id) {
+    const member = members.find(member => member.id === id);
+    if (!member) return;
+
+    document.getElementById("memberDetailsContent").innerHTML = `
+        <div class="details-profile">
+            <div class="details-avatar">${escapeHTML(getInitials(member.name))}</div>
+            <h3>${escapeHTML(member.name)}</h3>
+            <p>${escapeHTML(member.id)}</p>
+            <div style="margin-top:12px;">${getStatusBadge(member.status)}</div>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <small>Email Address</small>
+                <strong>${escapeHTML(member.email)}</strong>
+            </div>
+            <div class="detail-item">
+                <small>Contact Number</small>
+                <strong>${escapeHTML(member.phone)}</strong>
+            </div>
+            <div class="detail-item">
+                <small>Gender</small>
+                <strong>${escapeHTML(member.gender || "Not provided")}</strong>
+            </div>
+            <div class="detail-item">
+                <small>Membership Type</small>
+                <strong>${escapeHTML(member.type)}</strong>
+            </div>
+            <div class="detail-item">
+                <small>Date Joined</small>
+                <strong>${formatDate(member.joinDate)}</strong>
+            </div>
+            <div class="detail-item">
+                <small>Birthdate</small>
+                <strong>${formatDate(member.birthdate)}</strong>
+            </div>
+            <div class="detail-item" style="grid-column:1/-1;">
+                <small>Address</small>
+                <strong>${escapeHTML(member.address || "Not provided")}</strong>
+            </div>
+        </div>
+    `;
+
+    detailsModal.classList.remove("hidden");
+}
+
+/* CLOSE DETAILS MODAL */
+function closeDetailsModal() {
+    detailsModal.classList.add("hidden");
+}
+
+document.getElementById("closeDetails").addEventListener("click", closeDetailsModal);
+document.getElementById("closeDetailsBtn").addEventListener("click", closeDetailsModal);
+
+/* DELETE MEMBER */
+function deleteMember(id) {
+    const member = members.find(member => member.id === id);
+    if (!member) return;
+
+    const confirmDelete = confirm(
+        `Are you sure you want to delete ${member.name}?`
+    );
+
+    if (!confirmDelete) return;
+
+    members = members.filter(member => member.id !== id);
+    saveMembers();
+    displayMembers();
+    showToast("Member deleted successfully!");
+}
+
+/* SEARCH AND FILTER */
+searchInput.addEventListener("input", displayMembers);
+statusFilter.addEventListener("change", displayMembers);
+
+/* DARK MODE */
+const themeBtn = document.getElementById("themeBtn");
+
+function updateThemeButton() {
+    const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+
+    themeBtn.textContent = isDark ? "☀️" : "🌙";
+}
+
+const savedTheme = localStorage.getItem("pickleballTheme");
+
+if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+}
+
+updateThemeButton();
+
+themeBtn.addEventListener("click", () => {
+    const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+
+    if (isDark) {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("pickleballTheme", "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("pickleballTheme", "dark");
+    }
+
+    updateThemeButton();
+});
+
+/* CLOSE MODALS WHEN CLICKING OUTSIDE */
+memberModal.addEventListener("click", event => {
+    if (event.target === memberModal) closeMemberModal();
+});
+
+detailsModal.addEventListener("click", event => {
+    if (event.target === detailsModal) closeDetailsModal();
+});
+
+/* ESCAPE KEY CLOSES MODALS */
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeMemberModal();
+        closeDetailsModal();
+    }
+});
+
+/* INITIAL DISPLAY */
+displayMembers();
+</script>
+
+</body>
+</html>
